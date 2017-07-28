@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
 import KanbanBoard from './KanbanBoard'
+import update from 'react-addons-update'
+import {throttle} from './utils'
+
 import 'whatwg-fetch'
 import 'babel-polyfill'
-import update from 'react-addons-update'
 
 const API_URL = 'http://kanbanapi.pro-react.com'
 const API_HEADERS = {
@@ -16,6 +18,10 @@ class KanbanBoradContainer extends Component {
 		this.state = {
 			cards: [],
 		}
+		// 仅在arguments改变时执行
+		this.updateCardStatus = throttle( this.updateCardStatus.bind(this) )
+		// 在arguments改变或者每500ms，执行
+		this.updateCardPosition = throttle( this.updateCardPosition.bind(this), 500 )
 	}
 	
 	componentDidMount(){
@@ -66,7 +72,6 @@ class KanbanBoradContainer extends Component {
 			// 设置state
 			this.setState({cards:prevState})
 		})
-
 	}
 
 	deleteTask(cardId, taskId, taskIndex){
@@ -139,13 +144,84 @@ class KanbanBoradContainer extends Component {
 		})
 	}
 
+	updateCardStatus(cardId, listId){
+		let cardIndex = this.state.cards.findIndex((card)=>card.id == cardId)
+		let card = this.state.cards[cardIndex]
+
+		if(card.status !== listId){
+			this.setState(update(this.state,{
+				cards:{
+					[cardIndex]: {
+						status: {$set: listId}
+					}
+				}
+			
+			}))
+		}
+	}
+
+	updateCardPosition(cardId, afterId){
+		if(cardId !== afterId){
+			let cardIndex = this.state.cards.findIndex((card)=>card.id == cardId)
+			let card = this.state.cards[cardIndex]
+			let afterIndex = this.state.cards.findIndex((card)=>card.id == afterId)
+			this.setState(update(this.state,{
+				cards:{
+					$splice: [
+						[cardIndex, 1],
+						[afterIndex, 0, card]
+					]
+				}
+				
+			}))
+		}
+	}
+
+	// 持久化新卡片位置和状态
+	persistCardDrag(cardId, status){
+		// 得到当前card
+		let cardIndex = this.state.cards.findIndex( (card) => card.id==cardId )
+		let card = this.state.cards[cardIndex]
+
+		fetch(`${API_URL}/cards/${cardId}`,{
+			method: 'put',
+			headers: API_HEADERS,
+			body: JSON.stringify({
+				status:card.status, 
+				row_order_position:cardIndex})
+		})
+		.then((response)=>{
+			if(!response.ok){
+				throw new Error('服务器响应不是OK')
+			}
+		})
+		.catch((error)=>{
+			console.error("Fetch error:",error)
+			this.setState(
+				update(this.state, {
+					cards: {
+						[cardIndex]: {
+							status: {$set: status}
+						}
+					}
+				})
+			)
+		})
+	}
+
 	render(){
 		return <KanbanBoard cards={this.state.cards}
 							taskCallbacks={{
 								toggle: this.toggleTask.bind(this),
 								delete: this.deleteTask.bind(this),
 								add:    this.addTask.bind(this),
-							}}/>
+							}}
+							cardCallback={{
+								updateStatus: this.updateCardStatus,
+								updatePosition: this.updateCardPosition,
+								persistCardDrag: this.persistCardDrag.bind(this)
+							}}
+						/>
 	}
 }
 

@@ -85,3 +85,22 @@ ul{
 	margin-top: 10px;
 	border-radius: 3px;
 }
+
+/*动画*/
+.toggle-enter{
+	max-height: 0;
+	overflow: hidden;
+}
+.toggle-enter.toggle-enter-active{
+	max-height: 300px;
+	overflow: hidden;
+	transition: max-height .25s ease-in;
+}
+.toggle-leave{
+	max-height: 300px;
+}
+.toggle-leave.toggle-leave-active{
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height .25s ease-out;
+}
