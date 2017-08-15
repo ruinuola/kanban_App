@@ -7,6 +7,7 @@ import {DragSource, DropTarget} from 'react-dnd'
 import constants from '../constants';
 import CheckList from './CheckList';
 import CardActionCreators from '../actions/CardActionCreators';
+import shallowCompare from 'react-addons-shallow-compare';
 
 // 检验字符数量
 let titlePropType = (props, propName, componentName)=>{
@@ -58,11 +59,15 @@ let collectDrop = (connect, monitor)=>{
 }
 
 class Card extends Component{
-	constructor(){
-		super(...arguments);
-		this.state = {
-			showDetails: false
-		}
+//	constructor(){
+//		super(...arguments);
+//		this.state = {
+//			showDetails: false
+//		}
+//	}
+//	性能优化
+	shouldComponentUpdate( nextProps, nextState ){
+		return shallowCompare( this, nextProps, nextState )
 	}
 
 	// 显示与隐藏详细信息
@@ -79,7 +84,7 @@ class Card extends Component{
 			cardDetails = (
 					<div className='card_details'>
 						<span dangerouslySetInnerHTML={{__html:marked(this.props.description)}}/>
-						<CheckList cardId={this.props.id} tasks={this.props.tasks} taskCallbacks={this.props.taskCallbacks}/>
+						<CheckList cardId={this.props.id} tasks={this.props.tasks}/>
 					</div>
 				)
 		}

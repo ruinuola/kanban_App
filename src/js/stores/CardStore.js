@@ -154,7 +154,7 @@ class CardStore extends ReduceStore {
 					}
 				})
 				
-			case constants.TOGGLE_TASK_DETAILS:
+			case constants.TOGGLE_CARD_DETAILS:
 				cardIndex = this.getCardIndex( action.payload.cardId )
 				return update(this.getState(), {
 					[cardIndex]: {

@@ -32,14 +32,14 @@ let CardActionCreators = {
 	updateCardStatus: throttle((cardId, listId) => {
 		AppDispatcher.dispatch({
 			type: constants.UPDATE_CARDS_STATUS,
-			payload: {card, listId},
+			payload: {cardId, listId},
 		})
 	}),
 	
 	updateCardPosition: throttle((cardId, afterId) => {
 		AppDispatcher.dispatch({
 			type: constants.UPDATE_CARDS_STATUS,
-			payload: {card, afterId},
+			payload: {cardId, afterId},
 		})
 	},500),
 		

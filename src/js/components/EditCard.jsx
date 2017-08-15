@@ -24,8 +24,8 @@ class EditCard extends Component {
 	handleSubmit(e){
 		e.preventDefault()
 //		this.props.cardCallback.updateCard(this.state)
-		CardActionCreators.updateCard( CardStore.getCard( parseInt(
-			this.props.params.card_id)), this.state.draft )
+		CardActionCreators.updateCard( 
+			CardStore.getCard( parseInt(this.props.params.card_id) ), this.state.draft )
 		this.props.history.pushState(null, '/')
 	}
 	handleClose(e){

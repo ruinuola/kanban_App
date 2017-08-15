@@ -18,10 +18,7 @@ class KanbanBoard extends Component{
 			<div className="app">
 				<Link to='/new' className="float-button">+</Link>
 				<List id='todo' title="即将做的" 
-					cards={this.props.cards.filter((card) => {
-						console.log(card)
-						return card.status =="todo"
-					})}/>
+					cards={this.props.cards.filter((card) => card.status =="todo")}/>
 				<List id='in-progress' title="正在做的" 
 					cards={this.props.cards.filter((card) =>card.status =="in-progress")}/>
 				<List id='done' title="以及做完的" 

@@ -8,7 +8,7 @@ import CardActionCreators from '../actions/CardActionCreators';
 // 创建spec对象
 const listTargetSpec = {
 	hover(props, monitor){
-		const draggedId = monitor.getItem().id
+		const dragged = monitor.getItem().id
 //		props.cardCallback.updateStatus(draggedId, props.id)
 		CardActionCreators.updateCardStatus( dragged.id, props.id )
 	}
